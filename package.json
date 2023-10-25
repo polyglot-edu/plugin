@@ -1,0 +1,68 @@
+{
+	"name": "polyglot",
+	"displayName": "polyglot",
+	"description": "polyglot",
+	"version": "0.0.1",
+	"publisher": "ActivityBartool",
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onView: nodeDependencies"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"views": {
+			"path": [
+				{
+					"id": "nodeDependencies",
+					"name": "Node Dependencies",
+					"icon": "media/account_circle_filled_24px.svg",
+					"contextualTitle": "Path"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "path",
+					"title": "Path",
+					"icon": "media/account_circle_filled_24px.svg"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "extension.welcome",
+				"title": "Welcome",
+				"category": "Polyglot"
+			}
+		]
+	},
+	"icons": {
+		"light": "media/account_circle_filled_24px.svg",
+		"dark": "media/account_circle_filled_24px.svg"
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint \"src/**/*.ts\"",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/jquery": "^3.5.25",
+		"@types/node": "^16.18.34",
+		"@types/vscode": "^1.73.0",
+		"@typescript-eslint/eslint-plugin": "^6.7.0",
+		"@typescript-eslint/parser": "^6.7.0",
+		"eslint": "^8.26.0",
+		"typescript": "^5.2.2"
+	},
+	"dependencies": {
+		"axios": "^1.5.1",
+		"node-fetch": "^3.3.2"
+	}
+}
