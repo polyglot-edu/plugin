@@ -10,6 +10,7 @@
 	  .total_screen{
   
 		background-color: white;
+		
 	  }
   
 	  .first_line{
@@ -127,6 +128,8 @@
 		align-items: center;
 		width: 100%;
 		margin-top: 40px;
+		min-height: 200px; /* Altezza minima del contenitore dei bottoni */
+
   
 		.button{
   
@@ -158,24 +161,19 @@
 		<div class="second_line">
 		  <h1 class="write1"><b>Learning path selection</b></h1>
 		  <div class="bar">
-			<input type="text" class="searchInput" placeholder="Cerca..."></input>
-			<button style="color: white; background-color: black;">Search</button>
+			<input type="text" id="searchInput" class="searchInput" placeholder="Cerca..."></input>
 		  </div>
 		  <div class="allign1">
 			<div class="tent1">
 			  <h1 class="h1" style="color:lightgrey">Skills</h1>
-			  <select class="option1" style="font-size: 13px; width: 200px; height: 25px;">
-				<option value="option1">Skills</option>
-				<option value="option2">Option1</option>
-				<option value="option3">Option2</option>
+			  <select id="option1" class="option1" style="font-size: 13px; width: 200px; height: 25px;">
+				<option></option>
 			  </select>  
 			</div>
 			<div class="tent2">
 			  <h1 class="h2" style="color:lightgrey">Concepts</h1>
-			  <select style="font-size: 13px; width: 200px; height: 25px;">
-				<option value="option1">Concepts</option>
-				<option value="option2">Option1</option>
-				<option value="option3">Option2</option>
+			  <select id="option2" style="font-size: 13px; width: 200px; height: 25px;">
+				<option></option>
 			  </select>
 			</div>
 		  </div>
@@ -191,19 +189,69 @@
             return response.json();
         })
         .then((data) => {
+
+			//put all the real data in a new variable to put out untitled flowpath
             const filteredData = data.filter(item => {
                 const title = item.title.toLowerCase();
                 return !(title.includes("untitled") || title.includes("test") || title.includes("untit") || title.includes("grtet") || title.includes("dere") || title.includes("te"));
             });
 
+			//save all the title in a variable 
             const titles = filteredData.map(item => item.title);
-
             const thirdLine = document.querySelector(".third_line");
+
+			//create a variable names with the same length of data , for now is all empty
+			var names = new Array(filteredData.length).fill([]);  
+
+			//iterate  all of the element that have a title
+			filteredData.forEach(function(item, index) {
+  				// Verify if tags have an element or if it is empty
+  				if (item.tags && item.tags.length > 0) {
+					// create an array of name if tag isn't empty
+					const tagNames = item.tags.map(tag => tag.name);
+					//add array name 
+					names[index] = tagNames;
+  				} else {
+					//if the tag is empty I add an empty element in names
+					names[index] = [];
+  				}
+			});
+			//now I have a variable with all the names respect of the tag and so the different path flow
+
+			//variable to save univoce name
+			const uniqueNames = {};
+
+			// Iterate all the element that have a title
+			filteredData.forEach(item => {
+  				// extract the tag
+  				const tags = item.tags;
+
+  				// interate in the tag objects
+  				tags.forEach(tag => {
+   			 		// extract the name tag
+    				const name = tag.name;
+
+    				// Verify if the name was already see
+    				if (!uniqueNames[name]) {
+      					// if the name was alrealdy save i put it in the uniquenames
+      					uniqueNames[name] = true;
+    				}
+  				});
+			});
+
+			// extract all the unique name in an array
+			const skill = Object.keys(uniqueNames);
+			const concept = Object.keys(uniqueNames);
+			
 
             for (let i = 0; i < titles.length; i++) {
                 const bottone = document.createElement("button");
                 bottone.className = "button";
-                bottone.innerText = titles[i];
+				bottone.setAttribute('titles', titles[i]);
+				bottone.setAttribute('skills', names[i]);
+				bottone.setAttribute('concepts', names[i]);
+				var tit = bottone.getAttribute('titles');
+                bottone.innerText = tit;
                 thirdLine.appendChild(bottone);
 
                 bottone.addEventListener("click", function(event) {
@@ -214,6 +262,50 @@
                     });
                 });
             }
+
+			const selectDropdown = document.getElementById("option1");
+			// interate in the name and save only unique name
+			skill.forEach(name => {
+    			const option = document.createElement("option");
+    			option.value = name; //the value of the option is the name
+    			option.text = name;  // the text in the option is the name
+    			selectDropdown.appendChild(option); // add the option in the tent menu 1
+			});
+
+			const selectDropdown2 = document.getElementById("option2");
+			//interate in the name and save only unique name			
+			concept.forEach(name => {
+    			const option = document.createElement("option");
+    			option.value = name; //the value of the option is the name
+    			option.text = name;  // the text in the option is the name
+    			selectDropdown2.appendChild(option); // add the option in the tent menu 2
+			});
+
+			const searchInput = document.getElementById("searchInput");
+			const buttons = document.querySelectorAll(".button");
+
+			//function to put visible or invisible all the button in the webview
+			function updateButtonVisibility() {
+    			const selectedSkill = selectDropdown.value.toLowerCase();
+				const selectedConcept = selectDropdown2.value.toLowerCase();
+    			const searchText = searchInput.value.toLowerCase();
+
+    			buttons.forEach(button => {
+        			const buttonSkills = button.getAttribute("skills").toLowerCase();
+					const buttonConcepts = button.getAttribute("concepts").toLowerCase();
+        			const buttonTitle = button.innerText.toLowerCase();
+					
+					if (buttonSkills.includes(selectedSkill) && buttonTitle.includes(searchText) && buttonConcepts.includes(selectedConcept)) {
+            			button.style.display = "block";
+        			} else {
+            			button.style.display = "none";
+        			}
+    			});
+			}
+
+			selectDropdown.addEventListener("change", updateButtonVisibility);
+			selectDropdown2.addEventListener("change", updateButtonVisibility);
+			searchInput.addEventListener("input", updateButtonVisibility);
         })
         .catch(function(error) {
             console.log(error);
