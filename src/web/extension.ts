@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as path from 'path';
+import helmet from 'helmet';
 
 //path for the media of the button in treeview (HOME)
 const HomeItem = path.join(path.dirname(__dirname), 'media', 'home.png');
@@ -75,6 +76,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "helloworld-sample" is now active!');
 
+	helmet({
+		crossOriginResourcePolicy: {policy: 'cross-origin'},
+	});
+
 	//register the command to show the treeview component
 	vscode.window.registerTreeDataProvider('nodeDependencies',new TreeDataProvider());
 	vscode.commands.registerCommand('treeExplorer.openFile', (resource: vscode.Uri) => {
@@ -108,16 +113,28 @@ export function activate(context: vscode.ExtensionContext) {
 			switch (message.command) {
 				//when the message is apriNotebook you do his actions
 				case 'apriNotebook':
-					// Obtain the complete path of Notebook Jupiter file --> test.ipynb
-					const notebookPath = path.join(path.dirname(__dirname), 'notebooks', 'test.ipynb');
-
-					//Open Jupyter Notebook file with the text editor 
-					vscode.commands.executeCommand('vscode.open', vscode.Uri.file(notebookPath));
-					return;
-				case 'apriHtml':
+					
 
 					const htmlPath = path.join(path.dirname(__dirname),'notebooks', 'html.ipynb');
 					vscode.commands.executeCommand('vscode.open', vscode.Uri.file(htmlPath));
+				
+				
+					case 'apriHtml':
+
+					const notebookPath = path.join(vscode.workspace.rootPath || '', 'notebooks', 'ciao.ipynb');
+
+					vscode.commands.executeCommand('vscode.open', vscode.Uri.file(notebookPath), { preview: false });
+
+
+						/*vscode.commands.executeCommand('vscode.open', vscode.Uri.file(notebookPath));
+
+					//Open Jupyter Notebook file with the text editor 
+					vscode.commands.executeCommand('vscode.open', vscode.Uri.file(notebookPath));
+					vscode.workspace.openTextDocument(notebookPath).then(document => {
+						vscode.window.showTextDocument(document, { preview: false });
+					});
+					return;*/
+					
 			}
 		},
 			undefined,

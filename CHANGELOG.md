@@ -7,3 +7,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 - Initial release
+
+### Added
+
+- Added images to media folder
+    - ![Immagine Home](./media/home.png)
+    - ![Bell Image](https://i.postimg.cc/gjCQ9yVB/Bell.jpg)
