@@ -2,10 +2,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as path from 'path';
-import helmet from 'helmet';
 
 //path for the media of the button in treeview (HOME)
-const HomeItem = path.join(path.dirname(__dirname), 'media', 'home.png');
+const HomeItem = path.join(__dirname, 'media', 'home.png');
+console.log(HomeItem);
 
 //generate the treeview to see different button or only one in the primary sidebar
 class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -58,8 +58,10 @@ class Home extends TreeItem {
   
 	constructor(label: string) {
 		super(label);
-		const iconPath = vscode.Uri.file(HomeItem);
-    	this.iconPath = iconPath;
+		const iconPath = vscode.Uri.file(HomeItem).with({ scheme: 'vscode-resource' });
+		this.iconPath = iconPath;
+
+
 	  
 	}	
 	command = {
@@ -75,10 +77,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "helloworld-sample" is now active!');
-
-	helmet({
-		crossOriginResourcePolicy: {policy: 'cross-origin'},
-	});
 
 	//register the command to show the treeview component
 	vscode.window.registerTreeDataProvider('nodeDependencies',new TreeDataProvider());
@@ -115,26 +113,18 @@ export function activate(context: vscode.ExtensionContext) {
 				case 'apriNotebook':
 					
 
-					const htmlPath = path.join(path.dirname(__dirname),'notebooks', 'html.ipynb');
-					vscode.commands.executeCommand('vscode.open', vscode.Uri.file(htmlPath));
-				
-				
-					case 'apriHtml':
+					//const htmlPath = vscode.Uri.joinPath(context.extensionUri,'notebooks', 'ciao.ipynb');
+					//vscode.commands.executeCommand('vscode.open', htmlPath);
+					const notebookPath = vscode.Uri.joinPath(context.extensionUri, 'notebook', 'ciao.ipynb');
 
-					const notebookPath = path.join(vscode.workspace.rootPath || '', 'notebooks', 'ciao.ipynb');
+    				vscode.commands.executeCommand('vscode.openWith', notebookPath, 'jupyter-notebook', { viewColumn: vscode.ViewColumn.One })
+        			.then(() => {
+            			vscode.commands.executeCommand('notebook.cell.toggleCode', { direction: 'above' });
+            			vscode.commands.executeCommand('notebook.cell.toggleCode', { direction: 'below' });
+        			});
+					break;
 
-					vscode.commands.executeCommand('vscode.open', vscode.Uri.file(notebookPath), { preview: false });
-
-
-						/*vscode.commands.executeCommand('vscode.open', vscode.Uri.file(notebookPath));
-
-					//Open Jupyter Notebook file with the text editor 
-					vscode.commands.executeCommand('vscode.open', vscode.Uri.file(notebookPath));
-					vscode.workspace.openTextDocument(notebookPath).then(document => {
-						vscode.window.showTextDocument(document, { preview: false });
-					});
-					return;*/
-					
+					//scarico il notebook in locale  e lancio la cella in runtime
 			}
 		},
 			undefined,
