@@ -264,10 +264,10 @@ function getWebviewContent() {
 
 		.path{
   
-		  font-size: 15px;
-		  margin-top: 0px;
-		  color: var(--vscode-editor-foreground);
-		  padding-left: 30px;
+			font-size: 15px;
+			margin-top: 0px;
+			color: var(--vscode-editor-foreground);
+			padding-left: 30px;
 		}
   
 		.button1{
@@ -378,7 +378,7 @@ function getWebviewContent() {
 	<body>
 	  <div class="total_screen">
 		<div class= "first_line">
-			<img src="https://i.postimg.cc/DzVx5dyB/Logo-1-1.png">
+			<img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 120px; height: 61px;">
 			<h1 class="path">Path</h1>
 			<div class="button1">
 			<!-- Bottone con classe Bell -->
