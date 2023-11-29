@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 //path for the media of the button in treeview (HOME)
-const HomeItem = path.join(__dirname, 'media', 'home.png');
+const HomeItem = path.join(__dirname, 'media', 'Bell2.png');
 console.log(HomeItem);
 
 //generate the treeview to see different button or only one in the primary sidebar
@@ -142,51 +142,131 @@ function getWebviewContent() {
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Welcome</title>
+
+		<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+    	<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
   
 	<style>
+
+		body{
+			font-family: 'Arial', sans-serif;
+		}
+
+		body.vscode-dark{
+			background-color: var(--vscode-editor-background);
+			color: var(--vscode-foreground);
+		}
+
+		body.vscode-light{
+			background-color: var(--vscode-editor-background);
+			color: var(--vscode-foreground);
+		}
   
 	  .total_screen{
-  
-		background-color: white;		
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		height: 100vh;
 	  }
   
 	  .first_line{
 		display: flex;
 		align-items: center;
-		position: relative;
+		border-bottom: 1px solid var(--vscode-editor-foreground);
   
-  
-  
-		.Bell{
-		  width: 30px; 
-		  height: 31px; 
-		  background-image: url('https://i.postimg.cc/gjCQ9yVB/Bell.jpg'); 
-		  background-size: cover; 
-		  border: none; 
-		  cursor: pointer; 
+		.Bell {
+			width: 40px;
+			height: 39px;
+			background-color: transparent;
+			cursor: pointer;
+			display: inline-block;
 		}
-		.Question{
-		  width: 31px; 
-		  height: 31px; 
-		  background-image: url('https://i.postimg.cc/G2Vd2yPv/Question-Circle.jpg'); 
-		  background-size: cover; 
-		  border: none;
-		  cursor: pointer; 
-		  background-repeat: no-repeatp  
+	
+		.Bell.vscode-button {
+			background: transparent;
+			border: 0;
+			box-shadow: none;
+			padding: 0;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			height: 30px;
+			width: 29px;
+			border-radius: 4px;
+			overflow: hidden;
 		}
-		.Mask{
-		  width: 31px; 
-		  height: 31px;
-		  background-image: url('https://i.postimg.cc/J7XWxtcd/Mask-Group.jpg'); 
-		  background-size: cover; 
-		  border: none;
-		  cursor: pointer;
+	
+		/* Regola l'immagine per adattarla alle dimensioni del bottone */
+		.Bell.vscode-button .bell-image {
+			width: 100%;
+			height: 100%;
+			object-fit: cover; /* Adatta l'immagine mantenendo le proporzioni */
 		}
+
+		.Question {
+			width: 27px;
+			height: 26px;
+			background-color: transparent;
+			cursor: pointer;
+			display: inline-block;
+		}
+	
+		.Question.vscode-button {
+			background: transparent;
+			border: 0;
+			box-shadow: none;
+			padding: 0;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			height: 27px;
+			width: 26px;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+	
+		/* Regola l'immagine per adattarla alle dimensioni del bottone */
+		.Question.vscode-button .question-image {
+			width: 100%;
+			height: 100%;
+			object-fit: cover; /* Adatta l'immagine mantenendo le proporzioni */
+		}
+		
+		.Mask {
+			width: 30px;
+			height: 29px;
+			background-color: transparent;
+			cursor: pointer;
+			display: inline-block;
+		}
+	
+		.Mask.vscode-button {
+			background: transparent;
+			border: 0;
+			box-shadow: none;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			height: 39px;
+			width: 38px;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+	
+		/* Regola l'immagine per adattarla alle dimensioni del bottone */
+		.Mask.vscode-button .mask-image {
+			width: 70%;
+			height: 70%;
+		}
+
 		.path{
   
 		  font-size: 15px;
 		  margin-top: 0px;
-		  color: lightgray;
+		  color: var(--vscode-editor-foreground);
 		  padding-left: 30px;
 		}
   
@@ -214,6 +294,7 @@ function getWebviewContent() {
 		align-items: center;
 		text-align: center; 
 		margin-top: 20px; 
+		border-bottom: 1px solid var(--vscode-editor-foreground);
   
 		.bar{
   
@@ -223,8 +304,17 @@ function getWebviewContent() {
 		  .searchInput{
   
 			width: 75%; 
-			height: 20px;    
+			height: 20px; 
+			border: 1px solid var(--vscode-input-border);
+        	background-color: var(--vscode-input-background);
+        	color: var(--vscode-input-foreground);
+        	padding: 4px 8px;
+        	border-radius: 3px;
+        	outline: none;   
 		  }
+		  .searchInput::placeholder {
+			color: var(--vscode-input-placeholderForeground);
+		   }
 		}
   
 		.allign1{
@@ -260,39 +350,47 @@ function getWebviewContent() {
   
 	  .third_line{
   
+		
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
+		overflow-y: auto; /* Abilita lo scrolling verticale all'interno della terza linea */
+		max-height: 400px; /* Altezza massima della div terza linea */
 		margin-top: 40px;
-		min-height: 200px; /* Altezza minima del contenitore dei bottoni */
-
-  
+		
 		.button{
   
-		  width: 82%;
-		  height: 100px;
-		  cursor: pointer; 
-		  background-size: cover; 
-		  background-repeat: no-repeat; 
-		  background-color: white;   
-		  border-radius: 10px;
-		  border-color: lightgray;
-		  margin-bottom: 10px;
+			width: 82%;
+			min-height: 100px; /* Altezza minima desiderata per i bottoni */
+			max-height: 150px; /* Altezza massima desiderata per i bottoni */
+			background-color: var(--vscode-input-background);
+			color: var(--vscode-input-foreground);
+			border: 1px solid var(--vscode-input-border);
+			padding: 2px 5px;
+			margin-bottom: 5px;
+			border-radius: 4px;
 		}  
 	  }
-  
+
 	</style>
 	</head>
 	<body>
 	  <div class="total_screen">
 		<div class= "first_line">
-			<img src="https://i.postimg.cc/YSBrNgTR/Logo.jpg">
+			<img src="https://i.postimg.cc/DzVx5dyB/Logo-1-1.png">
 			<h1 class="path">Path</h1>
 			<div class="button1">
-			  <button class="Bell"></button>
-			  <button class="Question"></button>
-			  <button class="Mask"></button>
+			<!-- Bottone con classe Bell -->
+				<button class="Bell vscode-button">
+					<img class="bell-image" src="https://i.postimg.cc/nrXMwm3h/download-2-jfif.png" alt="Bell Image">
+				</button>
+			  	<button class="Question vscode-button">
+					<img class="question-image" src="https://i.postimg.cc/ZKTJRp8B/download-1.png" alt="Question Image">
+				</button>
+			  	<button class="Mask vscode-button">
+					<img class="mask.image" src="https://i.postimg.cc/J42nm1pv/Mask-Group-1.png" alt="Mark Image">
+				</button>
 			</div>
 		</div>  
 		<div class="second_line">
@@ -303,13 +401,13 @@ function getWebviewContent() {
 		  <div class="allign1">
 			<div class="tent1">
 			  <h1 class="h1" style="color:lightgrey">Skills</h1>
-			  <select id="option1" class="option1" style="font-size: 13px; width: 200px; height: 25px;">
+			  <select id="option1" class="option1" style="font-size: 13px; width: 200px; height: 25px; background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
 				<option></option>
 			  </select>  
 			</div>
 			<div class="tent2">
 			  <h1 class="h2" style="color:lightgrey">Concepts</h1>
-			  <select id="option2" style="font-size: 13px; width: 200px; height: 25px;">
+			  <select id="option2" style="font-size: 13px; width: 200px; height: 25px;background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
 				<option></option>
 			  </select>
 			</div>
