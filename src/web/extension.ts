@@ -3,9 +3,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
+
 //path for the media of the button in treeview (HOME)
 const HomeItem = path.join(__dirname, 'media', 'Bell2.png');
 console.log(HomeItem);
+
+let rememberLearningPath = '';
 
 //generate the treeview to see different button or only one in the primary sidebar
 class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -112,27 +115,46 @@ export function activate(context: vscode.ExtensionContext) {
 				//when the message is apriNotebook you do his actions
 				case 'apriNotebook':
 					
-
 					//const htmlPath = vscode.Uri.joinPath(context.extensionUri,'notebooks', 'ciao.ipynb');
 					//vscode.commands.executeCommand('vscode.open', htmlPath);
-					const notebookPath = vscode.Uri.joinPath(context.extensionUri, 'notebook', 'ciao.ipynb');
+					
+					/*const notebookPath = vscode.Uri.joinPath(context.extensionUri, 'notebook', 'menunote.html');
 
-    				vscode.commands.executeCommand('vscode.openWith', notebookPath, 'jupyter-notebook', { viewColumn: vscode.ViewColumn.One })
-        			.then(() => {
-            			vscode.commands.executeCommand('notebook.cell.toggleCode', { direction: 'above' });
-            			vscode.commands.executeCommand('notebook.cell.toggleCode', { direction: 'below' });
-        			});
+					vscode.env.openExternal(notebookPath);
+					*/
+
+					console.log('Received apriNotebook command. elementoCliccato:', message.elementoCliccato);
+
+					rememberLearningPath = message.elementoCliccato;
+
+					vscode.commands.executeCommand('extension.page2');
+
 					break;
-
-					//scarico il notebook in locale  e lancio la cella in runtime
+    			
 			}
 		},
 			undefined,
 			context.subscriptions
 		);		
 	})
+
+	vscode.commands.registerCommand('extension.page2', () =>{
+		const panel = vscode.window.createWebviewPanel(
+			'page2',
+			'page2',
+			vscode.ViewColumn.Two,
+			{enableScripts: true}
+		)
+
+		panel.title = 'Test Description';
+		panel.webview.html = getDescriptionPage(rememberLearningPath);
+
+
+	})
+
 	context.subscriptions.push(disposable);
 }
+
 
 //function to give to the webview his frontend
 function getWebviewContent() {
@@ -220,7 +242,7 @@ function getWebviewContent() {
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			cursor: pointer;
+			curs.or: pointer;
 			height: 27px;
 			width: 26px;
 			border-radius: 4px;
@@ -417,6 +439,8 @@ function getWebviewContent() {
 	  </div>
 	  <script>
 		(function(){
+			const vscode = acquireVsCodeApi();
+
     const url = 'https://polyglot-api.polyglot-edu.com/api/flows';
 
     fetch(url)
@@ -490,10 +514,14 @@ function getWebviewContent() {
                 thirdLine.appendChild(bottone);
 
                 bottone.addEventListener("click", function(event) {
-                    const vscode = acquireVsCodeApi();
+
+					//add the title to the global variable to remember the path clicked
+					rememberLearningPath = event.target.innerText;
+					console.log(rememberLearningPath);
+
                     vscode.postMessage({
                         command: 'apriNotebook',
-                        elementoCliccato: event.target.innerText
+                        elementoCliccato: rememberLearningPath
                     });
                 });
             }
@@ -548,5 +576,156 @@ function getWebviewContent() {
 }());
 		</script>
 	</body>
+	</html>`;
+}
+
+function getDescriptionPage(learningPath: string){
+	return `<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>DescriptionNotebook</title>
+
+		<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+    	<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+  
+	    <style>
+            body{
+			font-family: 'Arial', sans-serif;
+		}
+
+		body.vscode-dark{
+			background-color: var(--vscode-editor-background);
+			color: var(--vscode-foreground);
+		}
+
+		body.vscode-light{
+			background-color: var(--vscode-editor-background);
+			color: var(--vscode-foreground);
+		}
+  
+	  .total_screen{
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		height: 100vh;
+	  }
+  
+	  .first_line{
+		display: flex;
+		align-items: center;
+		border-bottom: 1px solid var(--vscode-editor-foreground);
+
+		.path{
+  
+		  font-size: 15px;
+		  margin-top: 0px;
+		  color: var(--vscode-editor-foreground);
+		  padding-left: 30px;
+		}
+	  }
+	  .first_line::before{
+		content: " ";
+		position: absolute;
+		left: 0;
+		top: 70px;
+		height: 1px;
+		width: 100%;
+		border-bottom: 1px solid lightgrey;
+	  }
+
+      .second_line{
+        display: flex;
+        align-items: left;
+        border-bottom: 1px solid var(--vscode-editor-foreground);
+        margin-top: 27px;
+        margin-left: 12px;
+        flex-direction: column;
+		min-height: 76%;
+
+
+        .h1{
+            font-size: 15px;
+		    margin-top: 0px;
+		    color: var(--vscode-editor-foreground);
+		    padding-left: 30px;
+        }
+      }
+
+	  .third_line{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		.nextQuiz{
+			margin-top: 10px;
+			width: 30%;
+			min-height: 60px; /* Altezza minima desiderata per i bottoni */
+			max-height: 80px; /* Altezza massima desiderata per i bottoni */
+			background-color: var(--vscode-input-background);
+			color: var(--vscode-input-foreground);
+			border: 1px solid var(--vscode-input-border);
+			padding: 2px 5px;
+			margin-bottom: 5px;
+			border-radius: 4px;
+		
+		}
+	  }
+      
+	    </style>
+	</head>
+	    <body>
+	        <div class="total_screen">
+                <div class= "first_line">
+                    <img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 120px; height: 61px;">
+                    <h1 class="path">Learning Path</h1>
+                </div>
+                <div class="second_line" id="second_line">
+                    <h1 class="theory">Theory</h1>
+                    <h1 class="description" id="description"></h1>
+                </div>
+				<div class="third_line">
+					<button class="nextQuiz">Next Quiz</button>
+				</div>
+            </div>
+
+<script type="module">
+
+    (function(){
+        const apiUrl = 'https://polyglot-api.polyglot-edu.com/api/flows';
+
+        // Aggiungi un ID all'elemento "description" per facilitare la selezione
+        const descriptionElement = document.querySelector('.second_line .description');
+
+		//let ciaone = "Introduction Applied Machine Learning"
+
+		const learningPath = '${learningPath}'; // Usa il valore passato come parametro
+
+
+		console.log(learningPath);
+
+
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Find the first item that matches the condition
+                const matchingItem = data.find(item => item.title === learningPath );
+
+                if (matchingItem) {
+                    // If a matching item is found, set the description
+                    descriptionElement.textContent = matchingItem.description;
+                    console.log(matchingItem.description);
+                } else {
+                    // Handle the case where no matching item is found
+                    console.error('No matching item found for', learningPath);
+                }
+            })
+            .catch(error => console.error('Error during API request:', error));
+
+    }());
+</script>
+	    </body>
 	</html>`;
 }

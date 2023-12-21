@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>DescriptionNotebook</title>
+
+		<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+    	<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+  
+	    <style>
+            body{
+			font-family: 'Arial', sans-serif;
+		}
+
+		body.vscode-dark{
+			background-color: var(--vscode-editor-background);
+			color: var(--vscode-foreground);
+		}
+
+		body.vscode-light{
+			background-color: var(--vscode-editor-background);
+			color: var(--vscode-foreground);
+		}
+  
+	  .total_screen{
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		height: 100vh;
+	  }
+  
+	  .first_line{
+		display: flex;
+		align-items: center;
+		border-bottom: 1px solid var(--vscode-editor-foreground);
+
+		.path{
+  
+		  font-size: 15px;
+		  margin-top: 0px;
+		  color: var(--vscode-editor-foreground);
+		  padding-left: 30px;
+		}
+	  }
+	  .first_line::before{
+		content: " ";
+		position: absolute;
+		left: 0;
+		top: 70px;
+		height: 1px;
+		width: 100%;
+		border-bottom: 1px solid lightgrey;
+	  }
+
+      .second_line{
+        display: flex;
+        align-items: left;
+        border-bottom: 1px solid var(--vscode-editor-foreground);
+        margin-top: 27px;
+        margin-left: 12px;
+        flex-direction: column;
+		min-height: 76%;
+
+        .h1{
+            font-size: 15px;
+		    margin-top: 0px;
+		    color: var(--vscode-editor-foreground);
+		    padding-left: 30px;
+        }
+      }
+
+	  .third_line{
+		display: flex;
+		align-items: center;
+
+		.nextQuiz{
+			width: 82%;
+			min-height: 100px; /* Altezza minima desiderata per i bottoni */
+			max-height: 150px; /* Altezza massima desiderata per i bottoni */
+			background-color: var(--vscode-input-background);
+			color: var(--vscode-input-foreground);
+			border: 1px solid var(--vscode-input-border);
+			padding: 2px 5px;
+			margin-bottom: 5px;
+			border-radius: 4px;
+		}
+
+	  }
+      
+	    </style>
+	</head>
+	    <body>
+	        <div class="total_screen">
+                <div class= "first_line">
+                    <img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 120px; height: 61px;">
+                    <h1 class="path">Learning Path</h1>
+                </div>
+                <div class="second_line" id="second_line">
+                    <h1 class="theory">Theory</h1>
+                    <h1 class="description" id="description">Weila</h1>
+                </div>
+				<div class="third_line">
+					<button class="nextQuiz">Next Quiz</button>
+				</div>
+            </div>
+
+<script type="module">
+
+	import {rememberLearningPath} from '../src/web/extension.ts';
+
+    (function(){
+        const apiUrl = 'https://polyglot-api.polyglot-edu.com/api/flows';
+
+        // Aggiungi un ID all'elemento "description" per facilitare la selezione
+        const descriptionElement = document.querySelector('.second_line .description');
+
+		let ciaone = "Introduction Applied Machine Learning"
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Find the first item that matches the condition
+                const matchingItem = data.find(item => item.title === ciaone);
+
+                if (matchingItem) {
+                    // If a matching item is found, set the description
+                    descriptionElement.textContent = matchingItem.description;
+                    console.log(matchingItem.description);
+                } else {
+                    // Handle the case where no matching item is found
+                    console.error('No matching item found for', ciaone);
+                }
+            })
+            .catch(error => console.error('Error during API request:', error));
+
+    }());
+</script>
+
+<!-- ... Il tuo HTML successivo ... -->
+
+	    </body>
+	</html>

@@ -30,7 +30,7 @@
 			"path": [
 				{
 					"id": "nodeDependencies",
-					"name": "",
+					"name": "nodeDependencies",
 					"contextualTitle": "Path"
 				}
 			]
@@ -49,6 +49,11 @@
 				"command": "extension.welcome",
 				"title": "Welcome",
 				"category": "Polyglot"
+			},
+			{
+				"command": "extension.page2",
+				"title": "Open Description Test",
+				"category": "Polyglot"
 			}
 		]
 	},
@@ -65,7 +70,7 @@
 	"devDependencies": {
 		"@types/jquery": "^3.5.25",
 		"@types/mocha": "^10.0.3",
-		"@types/node": "^16.18.34",
+		"@types/node": "^16.18.61",
 		"@types/vscode": "^1.73.0",
 		"@types/webpack": "^5.28.4",
 		"@types/webpack-env": "^1.18.3",
@@ -79,10 +84,12 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
+		"nbpreview": "^0.3.0",
 		"axios": "^1.5.1",
 		"git": "^0.1.5",
 		"helmet": "^7.1.0",
 		"node-fetch": "^3.3.2",
-		"path-browserify": "^1.0.1"
+		"path-browserify": "^1.0.1",
+		"ms-vscode.jupyter": "^2021.11.331623253"
 	}
 }
