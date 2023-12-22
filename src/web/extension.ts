@@ -9,6 +9,7 @@ const HomeItem = path.join(__dirname, 'media', 'Bell2.png');
 console.log(HomeItem);
 
 let rememberLearningPath = '';
+let rememberId = '';
 
 //generate the treeview to see different button or only one in the primary sidebar
 class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -127,6 +128,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 					rememberLearningPath = message.elementoCliccato;
 
+					console.log('Received aprNotebook command. idElementoCliccato:', message.idElementoCliccato);
+
+					//rememberId = message.idElementoCliccato;
+					rememberId = '3aaa2e43-3be9-4b52-87c9-c88eeafa6e60';
+					console.log(rememberId);
+
 					vscode.commands.executeCommand('extension.page2');
 
 					break;
@@ -147,7 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
 		)
 
 		panel.title = 'Test Description';
-		panel.webview.html = getDescriptionPage(rememberLearningPath);
+		panel.webview.html = getDescriptionPage(rememberLearningPath,rememberId);
 
 
 	})
@@ -501,11 +508,15 @@ function getWebviewContent() {
 			// extract all the unique name in an array
 			const skill = Object.keys(uniqueNames);
 			const concept = Object.keys(uniqueNames);
-			
-
+		
             for (let i = 0; i < titles.length; i++) {
+
+				const matchingItem = data.find(item => item.title === titles[i]);
+				const id = matchingItem ? matchingItem._id : null;
+
                 const bottone = document.createElement("button");
                 bottone.className = "button";
+				bottone.setAttribute('id', id);
 				bottone.setAttribute('titles', titles[i]);
 				bottone.setAttribute('skills', names[i]);
 				bottone.setAttribute('concepts', names[i]);
@@ -515,13 +526,16 @@ function getWebviewContent() {
 
                 bottone.addEventListener("click", function(event) {
 
+					rememberId = event.target.id;
+					console.log(rememberId);
 					//add the title to the global variable to remember the path clicked
 					rememberLearningPath = event.target.innerText;
 					console.log(rememberLearningPath);
 
                     vscode.postMessage({
                         command: 'apriNotebook',
-                        elementoCliccato: rememberLearningPath
+                        elementoCliccato: rememberLearningPath,
+						idElementoCliccato: rememberId
                     });
                 });
             }
@@ -579,7 +593,7 @@ function getWebviewContent() {
 	</html>`;
 }
 
-function getDescriptionPage(learningPath: string){
+function getDescriptionPage(learningPath: string, IdPath: string){
 	return `<!DOCTYPE html>
 	<html lang="en">
 	<head>
@@ -701,11 +715,10 @@ function getDescriptionPage(learningPath: string){
 		//let ciaone = "Introduction Applied Machine Learning"
 
 		const learningPath = '${learningPath}'; // Usa il valore passato come parametro
-
-
 		console.log(learningPath);
 
-
+		const learningId = '${IdPath}';
+		console.log(learningId);
 
         fetch(apiUrl)
             .then(response => response.json())
@@ -724,6 +737,42 @@ function getDescriptionPage(learningPath: string){
             })
             .catch(error => console.error('Error during API request:', error));
 
+
+			const nextQuizButton = document.querySelector('.nextQuiz');
+			nextQuizButton.addEventListener('click', function(){
+
+				console.log('button clicked');
+
+				const apiUrl = 'https://polyglot-api.polyglot-edu.com/api/execution/first';
+				
+				//data to send in the POST request
+				const postData = {
+					flowId: learningId
+				};
+
+				const requestOptions = {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(postData)
+				};
+
+				//do the call POST to the API
+				fetch(apiUrl, requestOptions)
+					.then(response => {
+						if(!response.ok){
+							throw new Error('Errore nella richiesta');
+						}
+						return response.json();
+					})
+					.then(data => {
+						console.log('Dati ricevuti:', data);
+					})
+					.catch(error => {
+						console.error('Errore nella chiamata API:', error.message);
+					});
+			})
     }());
 </script>
 	    </body>
