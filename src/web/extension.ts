@@ -10,6 +10,7 @@ console.log(HomeItem);
 
 let rememberLearningPath = '';
 let rememberId = '';
+let rememberTypeQuiz = '';
 
 //generate the treeview to see different button or only one in the primary sidebar
 class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -155,7 +156,30 @@ export function activate(context: vscode.ExtensionContext) {
 
 		panel.title = 'Test Description';
 		panel.webview.html = getDescriptionPage(rememberLearningPath,rememberId);
+		panel.webview.onDidReceiveMessage(message => {
+			switch (message.command) {
 
+				case 'openTypeQuiz':
+					
+					console.log('Received apriNotebook command. elementoCliccato:', message.Question);
+
+					rememberTypeQuiz = message.Question;
+
+					if(rememberTypeQuiz == 'vscode'){
+
+						//open notebook for the coding exercise
+					}else{
+
+						
+					}
+
+					break;
+    			
+			}
+		},
+			undefined,
+			context.subscriptions
+		);
 
 	})
 
@@ -707,6 +731,9 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 <script type="module">
 
     (function(){
+
+		const vscode = acquireVsCodeApi();
+
         const apiUrl = 'https://polyglot-api.polyglot-edu.com/api/flows';
 
         // Aggiungi un ID all'elemento "description" per facilitare la selezione
@@ -768,6 +795,14 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 					})
 					.then(data => {
 						console.log('Dati ricevuti:', data);
+
+						const question = data.firstNode.data.question;
+
+						vscode.postMessage({
+							command: 'openTypeQuiz',
+							Question: question
+						});
+
 					})
 					.catch(error => {
 						console.error('Errore nella chiamata API:', error.message);
