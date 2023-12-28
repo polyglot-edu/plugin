@@ -11,6 +11,7 @@ console.log(HomeItem);
 let rememberLearningPath = '';
 let rememberId = '';
 let rememberTypeQuiz = '';
+let rememberTipologyQuiz = '';
 
 //generate the treeview to see different button or only one in the primary sidebar
 class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -163,15 +164,19 @@ export function activate(context: vscode.ExtensionContext) {
 					
 					console.log('Received apriNotebook command. elementoCliccato:', message.Question);
 
-					rememberTypeQuiz = message.Question;
+					//rememberTypeQuiz = message.Question;
+					rememberTypeQuiz = 'webapp';
+					console.log(rememberTypeQuiz);
+
+					rememberTipologyQuiz = message.Type;
 
 					if(rememberTypeQuiz == 'vscode'){
 
 						//open notebook for the coding exercise
 					}else{
 
-						
-					}
+						const externalPageUrl = vscode.Uri.parse(`http://127.0.0.1:3000/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}`);
+						vscode.env.openExternal(externalPageUrl);					}
 
 					break;
     			
@@ -785,22 +790,24 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 					body: JSON.stringify(postData)
 				};
 
-				//do the call POST to the API
+				//do the call to the API
 				fetch(apiUrl, requestOptions)
 					.then(response => {
 						if(!response.ok){
-							throw new Error('Errore nella richiesta');
+							throw new Error('Error in the request');
 						}
 						return response.json();
 					})
 					.then(data => {
-						console.log('Dati ricevuti:', data);
+						console.log('data received:', data);
 
 						const question = data.firstNode.data.question;
+						const typeQuiz = data.firstNode.runtimeData.challengeContent[0].type;
 
 						vscode.postMessage({
 							command: 'openTypeQuiz',
-							Question: question
+							Question: question,
+							Type: typeQuiz
 						});
 
 					})
