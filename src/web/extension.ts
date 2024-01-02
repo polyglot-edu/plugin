@@ -133,6 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
 					console.log('Received aprNotebook command. idElementoCliccato:', message.idElementoCliccato);
 
 					//rememberId = message.idElementoCliccato;
+
 					rememberId = '3aaa2e43-3be9-4b52-87c9-c88eeafa6e60';
 					console.log(rememberId);
 
@@ -164,17 +165,18 @@ export function activate(context: vscode.ExtensionContext) {
 					
 					console.log('Received apriNotebook command. elementoCliccato:', message.Question);
 
-					//rememberTypeQuiz = message.Question;
-					rememberTypeQuiz = 'webapp';
+					rememberTypeQuiz = message.TypeVs;
+					rememberTypeQuiz = 'webapp';//commit when correct
 					console.log(rememberTypeQuiz);
 
 					rememberTipologyQuiz = message.Type;
 
-					if(rememberTypeQuiz == 'vscode'){
+					if(rememberTypeQuiz === 'VSCode'){
 
 						//open notebook for the coding exercise
 					}else{
 
+						console.log('rememberId prima dell invio:', rememberId);
 						const externalPageUrl = vscode.Uri.parse(`http://127.0.0.1:3000/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}`);
 						vscode.env.openExternal(externalPageUrl);					}
 
@@ -775,7 +777,7 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 
 				console.log('button clicked');
 
-				const apiUrl = 'https://polyglot-api.polyglot-edu.com/api/execution/first';
+				const apiUrl = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/first';
 				
 				//data to send in the POST request
 				const postData = {
@@ -801,12 +803,12 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 					.then(data => {
 						console.log('data received:', data);
 
-						const question = data.firstNode.data.question;
+						const typevs = data.firstNode.platform;
 						const typeQuiz = data.firstNode.runtimeData.challengeContent[0].type;
 
 						vscode.postMessage({
 							command: 'openTypeQuiz',
-							Question: question,
+							TypeVs: typevs,
 							Type: typeQuiz
 						});
 
