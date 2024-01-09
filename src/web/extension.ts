@@ -132,9 +132,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 					console.log('Received aprNotebook command. idElementoCliccato:', message.idElementoCliccato);
 
-					//rememberId = message.idElementoCliccato;
+					rememberId = message.idElementoCliccato;
 
-					rememberId = '3aaa2e43-3be9-4b52-87c9-c88eeafa6e60';
+					//rememberId = '3aaa2e43-3be9-4b52-87c9-c88eeafa6e60';
 					console.log(rememberId);
 
 					vscode.commands.executeCommand('extension.page2');
@@ -166,8 +166,8 @@ export function activate(context: vscode.ExtensionContext) {
 					console.log('Received apriNotebook command. elementoCliccato:', message.Question);
 
 					rememberTypeQuiz = message.TypeVs;
-					rememberTypeQuiz = 'webapp';//commit when correct
-					console.log(rememberTypeQuiz);
+					//rememberTypeQuiz = 'webapp';//commit when correct
+					console.log(message.TypeVs);
 
 					rememberTipologyQuiz = message.Type;
 
@@ -175,12 +175,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 						//open notebook for the coding exercise
 					}else{
+						if(rememberTypeQuiz === 'WebApp'){
 
 						console.log('rememberId prima dell invio:', rememberId);
-						const externalPageUrl = vscode.Uri.parse(`http://127.0.0.1:3000/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}`);
+						const externalPageUrl = vscode.Uri.parse(`http://127.0.0.1:3000/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}&rememberTypeQuiz=${encodeURIComponent(rememberTypeQuiz)}`);
 						vscode.env.openExternal(externalPageUrl);					}
 
 					break;
+						}
     			
 			}
 		},
@@ -479,7 +481,7 @@ function getWebviewContent() {
 		(function(){
 			const vscode = acquireVsCodeApi();
 
-    const url = 'https://polyglot-api.polyglot-edu.com/api/flows';
+    const url = 'https://polyglot-api-staging.polyglot-edu.com/api/flows';
 
     fetch(url)
         .then((response) => {
@@ -777,7 +779,7 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 
 				console.log('button clicked');
 
-				const apiUrl = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/first';
+				const apiUrl = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/next';
 				
 				//data to send in the POST request
 				const postData = {
@@ -804,7 +806,8 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 						console.log('data received:', data);
 
 						const typevs = data.firstNode.platform;
-						const typeQuiz = data.firstNode.runtimeData.challengeContent[0].type;
+						const typeQuiz = data.firstNode.type;
+						console.log(typeQuiz);
 
 						vscode.postMessage({
 							command: 'openTypeQuiz',
