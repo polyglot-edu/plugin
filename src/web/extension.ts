@@ -12,6 +12,8 @@ let rememberLearningPath = '';
 let rememberId = '';
 let rememberTypeQuiz = '';
 let rememberTipologyQuiz = '';
+let checkNode = false;
+let descriptionRem = '';
 
 //generate the treeview to see different button or only one in the primary sidebar
 class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -137,6 +139,9 @@ export function activate(context: vscode.ExtensionContext) {
 					//rememberId = '3aaa2e43-3be9-4b52-87c9-c88eeafa6e60';
 					console.log(rememberId);
 
+					descriptionRem = message.description;
+					console.log('descnote',descriptionRem);
+
 					vscode.commands.executeCommand('extension.page2');
 
 					break;
@@ -157,11 +162,13 @@ export function activate(context: vscode.ExtensionContext) {
 		)
 
 		panel.title = 'Test Description';
-		panel.webview.html = getDescriptionPage(rememberLearningPath,rememberId);
+		panel.webview.html = getDescriptionPage(rememberLearningPath,rememberId,checkNode);
 		panel.webview.onDidReceiveMessage(message => {
 			switch (message.command) {
 
 				case 'openTypeQuiz':
+
+				//add the check if it is firstnode or other node
 					
 					console.log('Received apriNotebook command. elementoCliccato:', message.Question);
 
@@ -178,8 +185,8 @@ export function activate(context: vscode.ExtensionContext) {
 						if(rememberTypeQuiz === 'WebApp'){
 
 						console.log('rememberId prima dell invio:', rememberId);
-						const externalPageUrl = vscode.Uri.parse(`http://127.0.0.1:3000/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}&rememberTypeQuiz=${encodeURIComponent(rememberTypeQuiz)}`);
-						vscode.env.openExternal(externalPageUrl);					}
+						const externalPageUrl = vscode.Uri.parse(`https://polyglot-webapp.polyglot-edu.com/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}&rememberTypeQuiz=${encodeURIComponent(rememberTypeQuiz)}`);
+						vscode.env.openExternal(externalPageUrl);}
 
 					break;
 						}
@@ -489,6 +496,8 @@ function getWebviewContent() {
         })
         .then((data) => {
 
+			console.log(data);
+
 			//put all the real data in a new variable to put out untitled flowpath
             const filteredData = data.filter(item => {
                 const title = item.title.toLowerCase();
@@ -546,6 +555,8 @@ function getWebviewContent() {
 
 				const matchingItem = data.find(item => item.title === titles[i]);
 				const id = matchingItem ? matchingItem._id : null;
+				const description = matchingItem ? matchingItem.description : null;
+				console.log('descri',i,description);
 
                 const bottone = document.createElement("button");
                 bottone.className = "button";
@@ -553,6 +564,7 @@ function getWebviewContent() {
 				bottone.setAttribute('titles', titles[i]);
 				bottone.setAttribute('skills', names[i]);
 				bottone.setAttribute('concepts', names[i]);
+				bottone.setAttribute('description',description);
 				var tit = bottone.getAttribute('titles');
                 bottone.innerText = tit;
                 thirdLine.appendChild(bottone);
@@ -564,11 +576,14 @@ function getWebviewContent() {
 					//add the title to the global variable to remember the path clicked
 					rememberLearningPath = event.target.innerText;
 					console.log(rememberLearningPath);
+					const description = event.target.getAttribute('description');
+					console.log('desc1',description);
 
                     vscode.postMessage({
                         command: 'apriNotebook',
                         elementoCliccato: rememberLearningPath,
-						idElementoCliccato: rememberId
+						idElementoCliccato: rememberId,
+						description: description
                     });
                 });
             }
@@ -626,7 +641,7 @@ function getWebviewContent() {
 	</html>`;
 }
 
-function getDescriptionPage(learningPath: string, IdPath: string){
+function getDescriptionPage(learningPath: string, IdPath: string,checkNode: boolean){
 	return `<!DOCTYPE html>
 	<html lang="en">
 	<head>
@@ -730,10 +745,10 @@ function getDescriptionPage(learningPath: string, IdPath: string){
                 </div>
                 <div class="second_line" id="second_line">
                     <h1 class="theory">Theory</h1>
-                    <h1 class="description" id="description"></h1>
+                    <h1 class="description" id="description">${descriptionRem}</h1>
                 </div>
 				<div class="third_line">
-					<button class="nextQuiz">Next Quiz</button>
+					<button class="nextQuiz">Start</button>
 				</div>
             </div>
 
@@ -778,6 +793,7 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 			nextQuizButton.addEventListener('click', function(){
 
 				console.log('button clicked');
+				console.log(learningId);
 
 				const apiUrl = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/next';
 				
@@ -805,15 +821,27 @@ function getDescriptionPage(learningPath: string, IdPath: string){
 					.then(data => {
 						console.log('data received:', data);
 
-						const typevs = data.firstNode.platform;
-						const typeQuiz = data.firstNode.type;
-						console.log(typeQuiz);
+						if(data.firstNode){
 
-						vscode.postMessage({
-							command: 'openTypeQuiz',
-							TypeVs: typevs,
-							Type: typeQuiz
-						});
+							const typevs = data.firstNode.platform;
+							const typeQuiz = data.firstNode.type;
+							console.log(typeQuiz);
+							console.log(typevs);
+							vscode.postMessage({
+								command: 'openTypeQuiz',
+								TypeVs: typevs,
+								Type: typeQuiz
+							});
+						}else{
+							const typevs = data.platform;
+							const typeQuiz = data.type;
+							console.log(typeQuiz);
+							vscode.postMessage({
+								command: 'openTypeQuiz',
+								TypeVs: typevs,
+								Type: typeQuiz
+							});
+						}
 
 					})
 					.catch(error => {
