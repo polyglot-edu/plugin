@@ -558,7 +558,7 @@ function getWebviewContent() {
 					//const buttonConcepts = button.getAttribute("concepts").toLowerCase();
 					const buttonTitle = button.innerText.toLowerCase();
 					
-					if (buttonKeywords.includes(selectedKeywords) && buttonTitle.includes(searchText) && buttonConcepts.includes(selectedConcept)) {
+					if (buttonKeywords.includes(selectedKeywords) && buttonTitle.includes(searchText) /*&& buttonConcepts.includes(selectedConcept)*/){
 						button.style.display = "block";
 					} else {
 						button.style.display = "none";
@@ -567,7 +567,7 @@ function getWebviewContent() {
 			}
 
 			selectDropdown.addEventListener("change", updateButtonVisibility);
-			selectDropdown2.addEventListener("change", updateButtonVisibility);
+			//selectDropdown2.addEventListener("change", updateButtonVisibility);
 			searchInput.addEventListener("input", updateButtonVisibility);
 		})
 		.catch(function(error) {

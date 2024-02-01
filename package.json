@@ -3,7 +3,7 @@
 	"displayName": "Polyglot-Edu",
 	"description": "Here put the description",
 	"icon": "logo-polyglot.png",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"publisher": "Polyglot",
 	"engines": {
 		"vscode": "^1.74.0"
