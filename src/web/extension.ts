@@ -185,7 +185,7 @@ export function activate(context: vscode.ExtensionContext) {
 						if(rememberTypeQuiz === 'WebApp'){
 
 						console.log('rememberId prima dell invio:', rememberId);
-						const externalPageUrl = vscode.Uri.parse(`https://polyglot-webapp.polyglot-edu.com/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}&rememberTypeQuiz=${encodeURIComponent(rememberTypeQuiz)}`);
+						const externalPageUrl = vscode.Uri.parse(`http://127.0.0.1:3000/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}&rememberTypeQuiz=${encodeURIComponent(rememberTypeQuiz)}`);
 						vscode.env.openExternal(externalPageUrl);}
 
 					break;
@@ -389,18 +389,19 @@ function getWebviewContent() {
 		.allign1{
   
 		  display: flex;
-		  justify-content: space-between;
+		  justify-content: center;
 		  width: 100%;
+		  margin-bottom: 4px;
   
   
 		  .tent1{
   
 		  display: flex;
 		  flex-direction: column;
-		  align-items: start;
+		  align-items: center;
+		  margin-bottom: 1px;
 		  font-size: 9px;
 		  margin-top: 10px;
-		  margin-left: 16%;
 		  }
   
 		  .tent2{
@@ -447,39 +448,39 @@ function getWebviewContent() {
 	<body>
 	  <div class="total_screen">
 		<div class= "first_line">
-			<img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 120px; height: 61px;">
-			<h1 class="path">Path</h1>
-			<div class="button1">
-			<!-- Bottone con classe Bell -->
-				<button class="Bell vscode-button">
-					<img class="bell-image" src="https://i.postimg.cc/nrXMwm3h/download-2-jfif.png" alt="Bell Image">
-				</button>
-			  	<button class="Question vscode-button">
-					<img class="question-image" src="https://i.postimg.cc/ZKTJRp8B/download-1.png" alt="Question Image">
-				</button>
-			  	<button class="Mask vscode-button">
-					<img class="mask.image" src="https://i.postimg.cc/J42nm1pv/Mask-Group-1.png" alt="Mark Image">
-				</button>
-			</div>
+			<img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 110px; height: 61px;">
+			<h1 class="path"></h1>
+			<!-- <div class="button1"> -->
+                <!-- Bottone con classe Bell -->
+                <!-- <button class="Bell vscode-button">
+                    <img class="bell-image" src="https://i.postimg.cc/nrXMwm3h/download-2-jfif.png" alt="Bell Image">
+                </button>
+                <button class="Question vscode-button">
+                    <img class="question-image" src="https://i.postimg.cc/ZKTJRp8B/download-1.png" alt="Question Image">
+                </button>
+                <button class="Mask vscode-button">
+                    <img class="mask.image" src="https://i.postimg.cc/J42nm1pv/Mask-Group-1.png" alt="Mark Image">
+                </button> -->
+            <!-- </div> -->
 		</div>  
 		<div class="second_line">
 		  <h1 class="write1"><b>Learning path selection</b></h1>
 		  <div class="bar">
-			<input type="text" id="searchInput" class="searchInput" placeholder="Cerca..."></input>
+			<input type="text" id="searchInput" class="searchInput" placeholder="Find..."></input>
 		  </div>
 		  <div class="allign1">
 			<div class="tent1">
-			  <h1 class="h1" style="color:lightgrey">Skills</h1>
+			  <h1 class="h1" style="color:lightgrey">Keywords</h1>
 			  <select id="option1" class="option1" style="font-size: 13px; width: 200px; height: 25px; background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
 				<option></option>
 			  </select>  
 			</div>
-			<div class="tent2">
-			  <h1 class="h2" style="color:lightgrey">Concepts</h1>
-			  <select id="option2" style="font-size: 13px; width: 200px; height: 25px;background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
-				<option></option>
-			  </select>
-			</div>
+			<!-- <div class="tent2"> -->
+                <!-- <h1 class="h2" style="color:lightgrey">Concepts</h1>
+                <select id="option2" style="font-size: 13px; width: 200px; height: 25px;background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
+                    <option></option>
+                </select> -->
+            <!-- </div> -->
 		  </div>
 		</div>  
 		<div class="third_line"></div>
@@ -501,7 +502,7 @@ function getWebviewContent() {
 			//put all the real data in a new variable to put out untitled flowpath
             const filteredData = data.filter(item => {
                 const title = item.title.toLowerCase();
-                return !(title.includes("untitled") || title.includes("test") || title.includes("untit") || title.includes("grtet") || title.includes("dere") || title.includes("te"));
+                return !(title.includes("untitled") || title.includes("untit") || title.includes("grtet") || title.includes("      ") || title.includes("aefee"));
             });
 
 			//save all the title in a variable 
@@ -548,8 +549,8 @@ function getWebviewContent() {
 			});
 
 			// extract all the unique name in an array
-			const skill = Object.keys(uniqueNames);
-			const concept = Object.keys(uniqueNames);
+			const keywords = Object.keys(uniqueNames);
+			//const concept = Object.keys(uniqueNames);
 		
             for (let i = 0; i < titles.length; i++) {
 
@@ -562,8 +563,8 @@ function getWebviewContent() {
                 bottone.className = "button";
 				bottone.setAttribute('id', id);
 				bottone.setAttribute('titles', titles[i]);
-				bottone.setAttribute('skills', names[i]);
-				bottone.setAttribute('concepts', names[i]);
+				bottone.setAttribute('keywords', names[i]);
+				//bottone.setAttribute('concepts', names[i]);
 				bottone.setAttribute('description',description);
 				var tit = bottone.getAttribute('titles');
                 bottone.innerText = tit;
@@ -590,14 +591,14 @@ function getWebviewContent() {
 
 			const selectDropdown = document.getElementById("option1");
 			// interate in the name and save only unique name
-			skill.forEach(name => {
+			keywords.forEach(name => {
     			const option = document.createElement("option");
     			option.value = name; //the value of the option is the name
     			option.text = name;  // the text in the option is the name
     			selectDropdown.appendChild(option); // add the option in the tent menu 1
 			});
 
-			const selectDropdown2 = document.getElementById("option2");
+			/*const selectDropdown2 = document.getElementById("option2");
 			//interate in the name and save only unique name			
 			concept.forEach(name => {
     			const option = document.createElement("option");
@@ -605,22 +606,23 @@ function getWebviewContent() {
     			option.text = name;  // the text in the option is the name
     			selectDropdown2.appendChild(option); // add the option in the tent menu 2
 			});
+			*/
 
 			const searchInput = document.getElementById("searchInput");
 			const buttons = document.querySelectorAll(".button");
 
 			//function to put visible or invisible all the button in the webview
 			function updateButtonVisibility() {
-    			const selectedSkill = selectDropdown.value.toLowerCase();
-				const selectedConcept = selectDropdown2.value.toLowerCase();
+    			const selectedKeywords = selectDropdown.value.toLowerCase();
+				//const selectedConcept = selectDropdown2.value.toLowerCase();
     			const searchText = searchInput.value.toLowerCase();
 
     			buttons.forEach(button => {
-        			const buttonSkills = button.getAttribute("skills").toLowerCase();
-					const buttonConcepts = button.getAttribute("concepts").toLowerCase();
+        			const buttonKeywords = button.getAttribute("keywords").toLowerCase();
+					//const buttonConcepts = button.getAttribute("concepts").toLowerCase();
         			const buttonTitle = button.innerText.toLowerCase();
 					
-					if (buttonSkills.includes(selectedSkill) && buttonTitle.includes(searchText) && buttonConcepts.includes(selectedConcept)) {
+					if (buttonKeywords.includes(selectedKeywords) && buttonTitle.includes(searchText) && buttonConcepts.includes(selectedConcept)) {
             			button.style.display = "block";
         			} else {
             			button.style.display = "none";
