@@ -1,7 +1,7 @@
 {
 	"name": "polyglot",
 	"displayName": "Polyglot-Edu",
-	"description": "Here put the description",
+	"description": "Enables the execution of AI-driven and Gamified Learning Paths.",
 	"icon": "logo-polyglot.png",
 	"version": "0.0.5",
 	"publisher": "Polyglot",
