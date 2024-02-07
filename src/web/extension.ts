@@ -178,15 +178,23 @@ export function activate(context: vscode.ExtensionContext) {
 
 					rememberTipologyQuiz = message.Type;
 
+					let rememberLink = message.Link;
+
+					let ctx = message.Ctx;
+
+
+
+
 					if(rememberTypeQuiz === 'VSCode'){
 
-						//open notebook for the coding exercise
+						//open notebook for the coding exercise// lancio il download del notebook con rememeberLink
 					}else{
 						if(rememberTypeQuiz === 'WebApp'){
 
 						console.log('rememberId prima dell invio:', rememberId);
-						const externalPageUrl = vscode.Uri.parse(`http://127.0.0.1:3000/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}&rememberTypeQuiz=${encodeURIComponent(rememberTypeQuiz)}`);
+						const externalPageUrl = vscode.Uri.parse(`https://polyglot-webapp.polyglot-edu.com/?rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&ctx=${encodeURIComponent(ctx)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}`);
 						vscode.env.openExternal(externalPageUrl);}
+						/*http://127.0.0.1:3000/*/
 
 					break;
 						}
@@ -790,20 +798,82 @@ function getDescriptionPage(learningPath: string, IdPath: string,checkNode: bool
             })
             .catch(error => console.error('Error during API request:', error));
 
+		const apiUrlFirst = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/first'
+		let typevs = '';
+		let ctxForActual= '';
+
+		const postDataFirst = {
+			flowId : learningId
+		};
+
+		const requestOptionsFirst = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(postDataFirst)
+		};
+
+		fetch(apiUrlFirst,requestOptionsFirst)
+			.then(response => {
+				if(!response.ok){
+					throw new Error('Error in the request');
+				}
+				return response.json();
+			})
+			.then(data => {
+
+				//console.log("dataFirst  ",data);
+
+				typevs = data.platform;
+				ctxForActual = data.ctx;
+				//console.log("typevs822  ",typevs);
+				//console.log("ctxForActual823  ",ctxForActual);
+			})
+			.catch(error => {
+				console.error('Errore nella chiamata API:', error.message);
+			});
+
+		const apiUrlRun = 'https://polyglot-api-staging.polyglot-edu.com/api/flows/${IdPath}/run'
+		let linkForDownload = '';
+
+		console.log("typevs ",typevs);
+
+		if(typevs === 'VSCode'){
+	
+			fetch(apiUrlRun,requestOptionsFirst)
+				.then(response => {
+					if(!response.ok){
+						throw new Error('Error in the request');
+					}
+					return response.json();
+				})
+				.then(data => {
+	
+					//da implementare per salvare il link per scaricare il notebook
+				})
+				.catch(error => {
+					console.error('Errore nella chiamata API:', error.message);
+				});
+
+		}else{
+
+			//console.log("in webapp");
 
 			const nextQuizButton = document.querySelector('.nextQuiz');
 			nextQuizButton.addEventListener('click', function(){
 
-				console.log('button clicked');
-				console.log(learningId);
-
-				const apiUrl = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/next';
-				
+				//console.log('button clicked');
+				//console.log(ctxForActual);
+	
+				const apiUrl2 = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/actual';
+					
 				//data to send in the POST request
+				
 				const postData = {
-					flowId: learningId
+					ctxId: ctxForActual
 				};
-
+	
 				const requestOptions = {
 					method: 'POST',
 					headers: {
@@ -811,9 +881,9 @@ function getDescriptionPage(learningPath: string, IdPath: string,checkNode: bool
 					},
 					body: JSON.stringify(postData)
 				};
-
+	
 				//do the call to the API
-				fetch(apiUrl, requestOptions)
+				fetch(apiUrl2, requestOptions)
 					.then(response => {
 						if(!response.ok){
 							throw new Error('Error in the request');
@@ -821,35 +891,25 @@ function getDescriptionPage(learningPath: string, IdPath: string,checkNode: bool
 						return response.json();
 					})
 					.then(data => {
-						console.log('data received:', data);
-
-						if(data.firstNode){
-
-							const typevs = data.firstNode.platform;
-							const typeQuiz = data.firstNode.type;
-							console.log(typeQuiz);
-							console.log(typevs);
-							vscode.postMessage({
-								command: 'openTypeQuiz',
-								TypeVs: typevs,
-								Type: typeQuiz
-							});
-						}else{
-							const typevs = data.platform;
-							const typeQuiz = data.type;
-							console.log(typeQuiz);
-							vscode.postMessage({
-								command: 'openTypeQuiz',
-								TypeVs: typevs,
-								Type: typeQuiz
-							});
-						}
-
+						//console.log('data received:', data);
+	
+						const typeQuiz = data.type;
+						//console.log(typeQuiz);
+						//console.log(typevs);
+						vscode.postMessage({
+							command: 'openTypeQuiz',
+							TypeVs: typevs,
+							Type: typeQuiz,
+							Link: linkForDownload,
+							Ctx: ctxForActual
+						});
 					})
 					.catch(error => {
 						console.error('Errore nella chiamata API:', error.message);
 					});
 			})
+
+		}
     }());
 </script>
 	    </body>

@@ -122,13 +122,14 @@ function activate(context) {
 					//rememberTypeQuiz = 'webapp';//commit when correct
 					console.log(message.TypeVs);
 					rememberTipologyQuiz = message.Type;
+					let rememberLink = message.Link;
+					let ctx = message.Ctx;
 					if (rememberTypeQuiz === 'VSCode') {
-						//open notebook for the coding exercise
-					}
-					else {
+					//open notebook for the coding exercise// lancio il download del notebook con rememeberLink
+					}else {
 						if (rememberTypeQuiz === 'WebApp') {
 							console.log('rememberId prima dell invio:', rememberId);
-							const externalPageUrl = vscode.Uri.parse(`https://polyglot-webapp.polyglot-edu.com/?rememberId=${encodeURIComponent(rememberId)}&rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}&rememberTypeQuiz=${encodeURIComponent(rememberTypeQuiz)}`);
+							const externalPageUrl = vscode.Uri.parse(`https://polyglot-webapp.polyglot-edu.com/?rememberLearningPath=${encodeURIComponent(rememberLearningPath)}&ctx=${encodeURIComponent(ctx)}&rememberTipologyQuiz=${encodeURIComponent(rememberTipologyQuiz)}`);
 							vscode.env.openExternal(externalPageUrl);
 						}
 						break;
@@ -142,651 +143,703 @@ exports.activate = activate;
 //function to give to the webview his frontend
 function getWebviewContent() {
 	return `<!DOCTYPE html>
-	<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Welcome</title>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Welcome</title>
 
-		<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
-		<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
-  
-	<style>
+	<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+	<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
 
-		body{
-			font-family: 'Arial', sans-serif;
-		}
+<style>
 
-		body.vscode-dark{
-			background-color: var(--vscode-editor-background);
-			color: var(--vscode-foreground);
-		}
+	body{
+		font-family: 'Arial', sans-serif;
+	}
 
-		body.vscode-light{
-			background-color: var(--vscode-editor-background);
-			color: var(--vscode-foreground);
-		}
-  
-	  .total_screen{
-		margin: 0;
+	body.vscode-dark{
+		background-color: var(--vscode-editor-background);
+		color: var(--vscode-foreground);
+	}
+
+	body.vscode-light{
+		background-color: var(--vscode-editor-background);
+		color: var(--vscode-foreground);
+	}
+
+  .total_screen{
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	height: 100vh;
+  }
+
+  .first_line{
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid var(--vscode-editor-foreground);
+
+	.Bell {
+		width: 40px;
+		height: 39px;
+		background-color: transparent;
+		cursor: pointer;
+		display: inline-block;
+	}
+
+	.Bell.vscode-button {
+		background: transparent;
+		border: 0;
+		box-shadow: none;
 		padding: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		height: 30px;
+		width: 29px;
+		border-radius: 4px;
 		overflow: hidden;
-		height: 100vh;
-	  }
-  
-	  .first_line{
-		display: flex;
-		align-items: center;
-		border-bottom: 1px solid var(--vscode-editor-foreground);
-  
-		.Bell {
-			width: 40px;
-			height: 39px;
-			background-color: transparent;
-			cursor: pointer;
-			display: inline-block;
-		}
-	
-		.Bell.vscode-button {
-			background: transparent;
-			border: 0;
-			box-shadow: none;
-			padding: 0;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-			height: 30px;
-			width: 29px;
-			border-radius: 4px;
-			overflow: hidden;
-		}
-	
-		/* Regola l'immagine per adattarla alle dimensioni del bottone */
-		.Bell.vscode-button .bell-image {
-			width: 100%;
-			height: 100%;
-			object-fit: cover; /* Adatta l'immagine mantenendo le proporzioni */
-		}
+	}
 
-		.Question {
-			width: 27px;
-			height: 26px;
-			background-color: transparent;
-			cursor: pointer;
-			display: inline-block;
-		}
-	
-		.Question.vscode-button {
-			background: transparent;
-			border: 0;
-			box-shadow: none;
-			padding: 0;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			curs.or: pointer;
-			height: 27px;
-			width: 26px;
-			border-radius: 4px;
-			overflow: hidden;
-		}
-	
-		/* Regola l'immagine per adattarla alle dimensioni del bottone */
-		.Question.vscode-button .question-image {
-			width: 100%;
-			height: 100%;
-			object-fit: cover; /* Adatta l'immagine mantenendo le proporzioni */
-		}
-		
-		.Mask {
-			width: 30px;
-			height: 29px;
-			background-color: transparent;
-			cursor: pointer;
-			display: inline-block;
-		}
-	
-		.Mask.vscode-button {
-			background: transparent;
-			border: 0;
-			box-shadow: none;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-			height: 39px;
-			width: 38px;
-			border-radius: 4px;
-			overflow: hidden;
-		}
-	
-		/* Regola l'immagine per adattarla alle dimensioni del bottone */
-		.Mask.vscode-button .mask-image {
-			width: 70%;
-			height: 70%;
-		}
-
-		.path{
-  
-			font-size: 15px;
-			margin-top: 0px;
-			color: var(--vscode-editor-foreground);
-			padding-left: 30px;
-		}
-  
-		.button1{
-  
-		  margin-left: auto;
-		  margin-right: 6px;
-		  position: relative;
-		}
-	  }
-	  .first_line::before{
-		content: " ";
-		position: absolute;
-		left: 0;
-		top: 70px;
-		height: 1px;
+	/* Regola l'immagine per adattarla alle dimensioni del bottone */
+	.Bell.vscode-button .bell-image {
 		width: 100%;
-		border-bottom: 1px solid lightgrey;
+		height: 100%;
+		object-fit: cover; /* Adatta l'immagine mantenendo le proporzioni */
+	}
+
+	.Question {
+		width: 27px;
+		height: 26px;
+		background-color: transparent;
+		cursor: pointer;
+		display: inline-block;
+	}
+
+	.Question.vscode-button {
+		background: transparent;
+		border: 0;
+		box-shadow: none;
+		padding: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		curs.or: pointer;
+		height: 27px;
+		width: 26px;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	/* Regola l'immagine per adattarla alle dimensioni del bottone */
+	.Question.vscode-button .question-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover; /* Adatta l'immagine mantenendo le proporzioni */
+	}
+	
+	.Mask {
+		width: 30px;
+		height: 29px;
+		background-color: transparent;
+		cursor: pointer;
+		display: inline-block;
+	}
+
+	.Mask.vscode-button {
+		background: transparent;
+		border: 0;
+		box-shadow: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		height: 39px;
+		width: 38px;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	/* Regola l'immagine per adattarla alle dimensioni del bottone */
+	.Mask.vscode-button .mask-image {
+		width: 70%;
+		height: 70%;
+	}
+
+	.path{
+
+		font-size: 15px;
+		margin-top: 0px;
+		color: var(--vscode-editor-foreground);
+		padding-left: 30px;
+	}
+
+	.button1{
+
+	  margin-left: auto;
+	  margin-right: 6px;
+	  position: relative;
+	}
+  }
+  .first_line::before{
+	content: " ";
+	position: absolute;
+	left: 0;
+	top: 70px;
+	height: 1px;
+	width: 100%;
+	border-bottom: 1px solid lightgrey;
+  }
+
+  .second_line{
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center; 
+	margin-top: 20px; 
+	border-bottom: 1px solid var(--vscode-editor-foreground);
+
+	.bar{
+
+	  margin-right: 5px;
+	  width: 100%;
+
+	  .searchInput{
+
+		width: 75%; 
+		height: 20px; 
+		border: 1px solid var(--vscode-input-border);
+		background-color: var(--vscode-input-background);
+		color: var(--vscode-input-foreground);
+		padding: 4px 8px;
+		border-radius: 3px;
+		outline: none;   
 	  }
-  
-	  .second_line{
-  
+	  .searchInput::placeholder {
+		color: var(--vscode-input-placeholderForeground);
+	   }
+	}
+
+	.allign1{
+
+	  display: flex;
+	  justify-content: center;
+	  width: 100%;
+	  margin-bottom: 4px;
+
+
+	  .tent1{
+
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  margin-bottom: 1px;
+	  font-size: 9px;
+	  margin-top: 10px;
+	  }
+
+	  .tent2{
+
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		text-align: center; 
-		margin-top: 20px; 
-		border-bottom: 1px solid var(--vscode-editor-foreground);
-  
-		.bar{
-  
-		  margin-right: 5px;
-		  width: 100%;
-  
-		  .searchInput{
-  
-			width: 75%; 
-			height: 20px; 
-			border: 1px solid var(--vscode-input-border);
-			background-color: var(--vscode-input-background);
-			color: var(--vscode-input-foreground);
-			padding: 4px 8px;
-			border-radius: 3px;
-			outline: none;   
-		  }
-		  .searchInput::placeholder {
-			color: var(--vscode-input-placeholderForeground);
-		   }
-		}
-  
-		.allign1{
-  
-		  display: flex;
-		  justify-content: center;
-		  width: 100%;
-		  margin-bottom: 4px;
-  
-  
-		  .tent1{
-  
-		  display: flex;
-		  flex-direction: column;
-		  align-items: center;
-		  margin-bottom: 1px;
-		  font-size: 9px;
-		  margin-top: 10px;
-		  }
-  
-		  .tent2{
-  
-			display: flex;
-			flex-direction: column;
-			align-items: start;
-			font-size: 9px;
-			margin-top: 10px;
-			margin-right: 16%;
-  
-		  }
-		}
-  
-	  }
-  
-	  .third_line{
-  
-		
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: 100%;
-		overflow-y: auto; /* Abilita lo scrolling verticale all'interno della terza linea */
-		max-height: 400px; /* Altezza massima della div terza linea */
-		margin-top: 40px;
-		
-		.button{
-  
-			width: 82%;
-			min-height: 100px; /* Altezza minima desiderata per i bottoni */
-			max-height: 150px; /* Altezza massima desiderata per i bottoni */
-			background-color: var(--vscode-input-background);
-			color: var(--vscode-input-foreground);
-			border: 1px solid var(--vscode-input-border);
-			padding: 2px 5px;
-			margin-bottom: 5px;
-			border-radius: 4px;
-		}  
-	  }
+		align-items: start;
+		font-size: 9px;
+		margin-top: 10px;
+		margin-right: 16%;
 
-	</style>
-	</head>
-	<body>
-	  <div class="total_screen">
-		<div class= "first_line">
-			<img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 110px; height: 61px;">
-			<h1 class="path"></h1>
-			<!-- <div class="button1"> -->
-				<!-- Bottone con classe Bell -->
-				<!-- <button class="Bell vscode-button">
-					<img class="bell-image" src="https://i.postimg.cc/nrXMwm3h/download-2-jfif.png" alt="Bell Image">
-				</button>
-				<button class="Question vscode-button">
-					<img class="question-image" src="https://i.postimg.cc/ZKTJRp8B/download-1.png" alt="Question Image">
-				</button>
-				<button class="Mask vscode-button">
-					<img class="mask.image" src="https://i.postimg.cc/J42nm1pv/Mask-Group-1.png" alt="Mark Image">
-				</button> -->
-			<!-- </div> -->
-		</div>  
-		<div class="second_line">
-		  <h1 class="write1"><b>Learning path selection</b></h1>
-		  <div class="bar">
-			<input type="text" id="searchInput" class="searchInput" placeholder="Find..."></input>
-		  </div>
-		  <div class="allign1">
-			<div class="tent1">
-			  <h1 class="h1" style="color:lightgrey">Keywords</h1>
-			  <select id="option1" class="option1" style="font-size: 13px; width: 200px; height: 25px; background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
-				<option></option>
-			  </select>  
-			</div>
-			<!-- <div class="tent2"> -->
-				<!-- <h1 class="h2" style="color:lightgrey">Concepts</h1>
-				<select id="option2" style="font-size: 13px; width: 200px; height: 25px;background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
-					<option></option>
-				</select> -->
-			<!-- </div> -->
-		  </div>
-		</div>  
-		<div class="third_line"></div>
+	  }
+	}
+
+  }
+
+  .third_line{
+
+	
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	overflow-y: auto; /* Abilita lo scrolling verticale all'interno della terza linea */
+	max-height: 400px; /* Altezza massima della div terza linea */
+	margin-top: 40px;
+	
+	.button{
+
+		width: 82%;
+		min-height: 100px; /* Altezza minima desiderata per i bottoni */
+		max-height: 150px; /* Altezza massima desiderata per i bottoni */
+		background-color: var(--vscode-input-background);
+		color: var(--vscode-input-foreground);
+		border: 1px solid var(--vscode-input-border);
+		padding: 2px 5px;
+		margin-bottom: 5px;
+		border-radius: 4px;
+	}  
+  }
+
+</style>
+</head>
+<body>
+  <div class="total_screen">
+	<div class= "first_line">
+		<img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 110px; height: 61px;">
+		<h1 class="path"></h1>
+		<!-- <div class="button1"> -->
+			<!-- Bottone con classe Bell -->
+			<!-- <button class="Bell vscode-button">
+				<img class="bell-image" src="https://i.postimg.cc/nrXMwm3h/download-2-jfif.png" alt="Bell Image">
+			</button>
+			<button class="Question vscode-button">
+				<img class="question-image" src="https://i.postimg.cc/ZKTJRp8B/download-1.png" alt="Question Image">
+			</button>
+			<button class="Mask vscode-button">
+				<img class="mask.image" src="https://i.postimg.cc/J42nm1pv/Mask-Group-1.png" alt="Mark Image">
+			</button> -->
+		<!-- </div> -->
+	</div>  
+	<div class="second_line">
+	  <h1 class="write1"><b>Learning path selection</b></h1>
+	  <div class="bar">
+		<input type="text" id="searchInput" class="searchInput" placeholder="Find..."></input>
 	  </div>
-	  <script>
-		(function(){
-			const vscode = acquireVsCodeApi();
+	  <div class="allign1">
+		<div class="tent1">
+		  <h1 class="h1" style="color:lightgrey">Keywords</h1>
+		  <select id="option1" class="option1" style="font-size: 13px; width: 200px; height: 25px; background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
+			<option></option>
+		  </select>  
+		</div>
+		<!-- <div class="tent2"> -->
+			<!-- <h1 class="h2" style="color:lightgrey">Concepts</h1>
+			<select id="option2" style="font-size: 13px; width: 200px; height: 25px;background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 2px 5px;">
+				<option></option>
+			</select> -->
+		<!-- </div> -->
+	  </div>
+	</div>  
+	<div class="third_line"></div>
+  </div>
+  <script>
+	(function(){
+		const vscode = acquireVsCodeApi();
 
-	const url = 'https://polyglot-api-staging.polyglot-edu.com/api/flows';
+const url = 'https://polyglot-api-staging.polyglot-edu.com/api/flows';
 
-	fetch(url)
-		.then((response) => {
-			return response.json();
-		})
-		.then((data) => {
+fetch(url)
+	.then((response) => {
+		return response.json();
+	})
+	.then((data) => {
 
-			console.log(data);
+		console.log(data);
 
-			//put all the real data in a new variable to put out untitled flowpath
-			const filteredData = data.filter(item => {
-				const title = item.title.toLowerCase();
-				return !(title.includes("untitled") || title.includes("untit") || title.includes("grtet") || title.includes("      ") || title.includes("aefee"));
-			});
-
-			//save all the title in a variable 
-			const titles = filteredData.map(item => item.title);
-			const thirdLine = document.querySelector(".third_line");
-
-			//create a variable names with the same length of data , for now is all empty
-			var names = new Array(filteredData.length).fill([]);  
-
-			//iterate  all of the element that have a title
-			filteredData.forEach(function(item, index) {
-				  // Verify if tags have an element or if it is empty
-				  if (item.tags && item.tags.length > 0) {
-					// create an array of name if tag isn't empty
-					const tagNames = item.tags.map(tag => tag.name);
-					//add array name 
-					names[index] = tagNames;
-				  } else {
-					//if the tag is empty I add an empty element in names
-					names[index] = [];
-				  }
-			});
-			//now I have a variable with all the names respect of the tag and so the different path flow
-
-			//variable to save univoce name
-			const uniqueNames = {};
-
-			// Iterate all the element that have a title
-			filteredData.forEach(item => {
-				  // extract the tag
-				  const tags = item.tags;
-
-				  // interate in the tag objects
-				  tags.forEach(tag => {
-						// extract the name tag
-					const name = tag.name;
-
-					// Verify if the name was already see
-					if (!uniqueNames[name]) {
-						  // if the name was alrealdy save i put it in the uniquenames
-						  uniqueNames[name] = true;
-					}
-				  });
-			});
-
-			// extract all the unique name in an array
-			const keywords = Object.keys(uniqueNames);
-			//const concept = Object.keys(uniqueNames);
-		
-			for (let i = 0; i < titles.length; i++) {
-
-				const matchingItem = data.find(item => item.title === titles[i]);
-				const id = matchingItem ? matchingItem._id : null;
-				const description = matchingItem ? matchingItem.description : null;
-				console.log('descri',i,description);
-
-				const bottone = document.createElement("button");
-				bottone.className = "button";
-				bottone.setAttribute('id', id);
-				bottone.setAttribute('titles', titles[i]);
-				bottone.setAttribute('keywords', names[i]);
-				//bottone.setAttribute('concepts', names[i]);
-				bottone.setAttribute('description',description);
-				var tit = bottone.getAttribute('titles');
-				bottone.innerText = tit;
-				thirdLine.appendChild(bottone);
-
-				bottone.addEventListener("click", function(event) {
-
-					rememberId = event.target.id;
-					console.log(rememberId);
-					//add the title to the global variable to remember the path clicked
-					rememberLearningPath = event.target.innerText;
-					console.log(rememberLearningPath);
-					const description = event.target.getAttribute('description');
-					console.log('desc1',description);
-
-					vscode.postMessage({
-						command: 'apriNotebook',
-						elementoCliccato: rememberLearningPath,
-						idElementoCliccato: rememberId,
-						description: description
-					});
-				});
-			}
-
-			const selectDropdown = document.getElementById("option1");
-			// interate in the name and save only unique name
-			keywords.forEach(name => {
-				const option = document.createElement("option");
-				option.value = name; //the value of the option is the name
-				option.text = name;  // the text in the option is the name
-				selectDropdown.appendChild(option); // add the option in the tent menu 1
-			});
-
-			/*const selectDropdown2 = document.getElementById("option2");
-			//interate in the name and save only unique name			
-			concept.forEach(name => {
-				const option = document.createElement("option");
-				option.value = name; //the value of the option is the name
-				option.text = name;  // the text in the option is the name
-				selectDropdown2.appendChild(option); // add the option in the tent menu 2
-			});
-			*/
-
-			const searchInput = document.getElementById("searchInput");
-			const buttons = document.querySelectorAll(".button");
-
-			//function to put visible or invisible all the button in the webview
-			function updateButtonVisibility() {
-				const selectedKeywords = selectDropdown.value.toLowerCase();
-				//const selectedConcept = selectDropdown2.value.toLowerCase();
-				const searchText = searchInput.value.toLowerCase();
-
-				buttons.forEach(button => {
-					const buttonKeywords = button.getAttribute("keywords").toLowerCase();
-					//const buttonConcepts = button.getAttribute("concepts").toLowerCase();
-					const buttonTitle = button.innerText.toLowerCase();
-					
-					if (buttonKeywords.includes(selectedKeywords) && buttonTitle.includes(searchText) /*&& buttonConcepts.includes(selectedConcept)*/){
-						button.style.display = "block";
-					} else {
-						button.style.display = "none";
-					}
-				});
-			}
-
-			selectDropdown.addEventListener("change", updateButtonVisibility);
-			//selectDropdown2.addEventListener("change", updateButtonVisibility);
-			searchInput.addEventListener("input", updateButtonVisibility);
-		})
-		.catch(function(error) {
-			console.log(error);
+		//put all the real data in a new variable to put out untitled flowpath
+		const filteredData = data.filter(item => {
+			const title = item.title.toLowerCase();
+			return !(title.includes("untitled") || title.includes("untit") || title.includes("grtet") || title.includes("      ") || title.includes("aefee"));
 		});
+
+		//save all the title in a variable 
+		const titles = filteredData.map(item => item.title);
+		const thirdLine = document.querySelector(".third_line");
+
+		//create a variable names with the same length of data , for now is all empty
+		var names = new Array(filteredData.length).fill([]);  
+
+		//iterate  all of the element that have a title
+		filteredData.forEach(function(item, index) {
+			  // Verify if tags have an element or if it is empty
+			  if (item.tags && item.tags.length > 0) {
+				// create an array of name if tag isn't empty
+				const tagNames = item.tags.map(tag => tag.name);
+				//add array name 
+				names[index] = tagNames;
+			  } else {
+				//if the tag is empty I add an empty element in names
+				names[index] = [];
+			  }
+		});
+		//now I have a variable with all the names respect of the tag and so the different path flow
+
+		//variable to save univoce name
+		const uniqueNames = {};
+
+		// Iterate all the element that have a title
+		filteredData.forEach(item => {
+			  // extract the tag
+			  const tags = item.tags;
+
+			  // interate in the tag objects
+			  tags.forEach(tag => {
+					// extract the name tag
+				const name = tag.name;
+
+				// Verify if the name was already see
+				if (!uniqueNames[name]) {
+					  // if the name was alrealdy save i put it in the uniquenames
+					  uniqueNames[name] = true;
+				}
+			  });
+		});
+
+		// extract all the unique name in an array
+		const keywords = Object.keys(uniqueNames);
+		//const concept = Object.keys(uniqueNames);
+	
+		for (let i = 0; i < titles.length; i++) {
+
+			const matchingItem = data.find(item => item.title === titles[i]);
+			const id = matchingItem ? matchingItem._id : null;
+			const description = matchingItem ? matchingItem.description : null;
+			console.log('descri',i,description);
+
+			const bottone = document.createElement("button");
+			bottone.className = "button";
+			bottone.setAttribute('id', id);
+			bottone.setAttribute('titles', titles[i]);
+			bottone.setAttribute('keywords', names[i]);
+			//bottone.setAttribute('concepts', names[i]);
+			bottone.setAttribute('description',description);
+			var tit = bottone.getAttribute('titles');
+			bottone.innerText = tit;
+			thirdLine.appendChild(bottone);
+
+			bottone.addEventListener("click", function(event) {
+
+				rememberId = event.target.id;
+				console.log(rememberId);
+				//add the title to the global variable to remember the path clicked
+				rememberLearningPath = event.target.innerText;
+				console.log(rememberLearningPath);
+				const description = event.target.getAttribute('description');
+				console.log('desc1',description);
+
+				vscode.postMessage({
+					command: 'apriNotebook',
+					elementoCliccato: rememberLearningPath,
+					idElementoCliccato: rememberId,
+					description: description
+				});
+			});
+		}
+
+		const selectDropdown = document.getElementById("option1");
+		// interate in the name and save only unique name
+		keywords.forEach(name => {
+			const option = document.createElement("option");
+			option.value = name; //the value of the option is the name
+			option.text = name;  // the text in the option is the name
+			selectDropdown.appendChild(option); // add the option in the tent menu 1
+		});
+
+		/*const selectDropdown2 = document.getElementById("option2");
+		//interate in the name and save only unique name			
+		concept.forEach(name => {
+			const option = document.createElement("option");
+			option.value = name; //the value of the option is the name
+			option.text = name;  // the text in the option is the name
+			selectDropdown2.appendChild(option); // add the option in the tent menu 2
+		});
+		*/
+
+		const searchInput = document.getElementById("searchInput");
+		const buttons = document.querySelectorAll(".button");
+
+		//function to put visible or invisible all the button in the webview
+		function updateButtonVisibility() {
+			const selectedKeywords = selectDropdown.value.toLowerCase();
+			//const selectedConcept = selectDropdown2.value.toLowerCase();
+			const searchText = searchInput.value.toLowerCase();
+
+			buttons.forEach(button => {
+				const buttonKeywords = button.getAttribute("keywords").toLowerCase();
+				//const buttonConcepts = button.getAttribute("concepts").toLowerCase();
+				const buttonTitle = button.innerText.toLowerCase();
+				
+				if (buttonKeywords.includes(selectedKeywords) && buttonTitle.includes(searchText) /*&& buttonConcepts.includes(selectedConcept)*/){
+					button.style.display = "block";
+				} else {
+					button.style.display = "none";
+				}
+			});
+		}
+
+		selectDropdown.addEventListener("change", updateButtonVisibility);
+		//selectDropdown2.addEventListener("change", updateButtonVisibility);
+		searchInput.addEventListener("input", updateButtonVisibility);
+	})
+	.catch(function(error) {
+		console.log(error);
+	});
 }());
-		</script>
-	</body>
-	</html>`;
+	</script>
+</body>
+</html>`;
 }
 function getDescriptionPage(learningPath, IdPath, checkNode) {
 	return `<!DOCTYPE html>
-	<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>DescriptionNotebook</title>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DescriptionNotebook</title>
 
-		<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
-		<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+	<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+	<link rel="stylesheet" href="https://unpkg.com/vscode-codicons@4.0.0/dist/codicon.css">
+
+	<style>
+		body{
+		font-family: 'Arial', sans-serif;
+	}
+
+	body.vscode-dark{
+		background-color: var(--vscode-editor-background);
+		color: var(--vscode-foreground);
+	}
+
+	body.vscode-light{
+		background-color: var(--vscode-editor-background);
+		color: var(--vscode-foreground);
+	}
+
+  .total_screen{
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	height: 100vh;
+  }
+
+  .first_line{
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid var(--vscode-editor-foreground);
+
+	.path{
+
+	  font-size: 15px;
+	  margin-top: 0px;
+	  color: var(--vscode-editor-foreground);
+	  padding-left: 30px;
+	}
+  }
+  .first_line::before{
+	content: " ";
+	position: absolute;
+	left: 0;
+	top: 70px;
+	height: 1px;
+	width: 100%;
+	border-bottom: 1px solid lightgrey;
+  }
+
+  .second_line{
+	display: flex;
+	align-items: left;
+	border-bottom: 1px solid var(--vscode-editor-foreground);
+	margin-top: 27px;
+	margin-left: 12px;
+	flex-direction: column;
+	min-height: 76%;
+
+
+	.h1{
+		font-size: 15px;
+		margin-top: 0px;
+		color: var(--vscode-editor-foreground);
+		padding-left: 30px;
+	}
+  }
+
+  .third_line{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	.nextQuiz{
+		margin-top: 10px;
+		width: 30%;
+		min-height: 60px; /* Altezza minima desiderata per i bottoni */
+		max-height: 80px; /* Altezza massima desiderata per i bottoni */
+		background-color: var(--vscode-input-background);
+		color: var(--vscode-input-foreground);
+		border: 1px solid var(--vscode-input-border);
+		padding: 2px 5px;
+		margin-bottom: 5px;
+		border-radius: 4px;
+	
+	}
+  }
   
-		<style>
-			body{
-			font-family: 'Arial', sans-serif;
-		}
-
-		body.vscode-dark{
-			background-color: var(--vscode-editor-background);
-			color: var(--vscode-foreground);
-		}
-
-		body.vscode-light{
-			background-color: var(--vscode-editor-background);
-			color: var(--vscode-foreground);
-		}
-  
-	  .total_screen{
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		height: 100vh;
-	  }
-  
-	  .first_line{
-		display: flex;
-		align-items: center;
-		border-bottom: 1px solid var(--vscode-editor-foreground);
-
-		.path{
-  
-		  font-size: 15px;
-		  margin-top: 0px;
-		  color: var(--vscode-editor-foreground);
-		  padding-left: 30px;
-		}
-	  }
-	  .first_line::before{
-		content: " ";
-		position: absolute;
-		left: 0;
-		top: 70px;
-		height: 1px;
-		width: 100%;
-		border-bottom: 1px solid lightgrey;
-	  }
-
-	  .second_line{
-		display: flex;
-		align-items: left;
-		border-bottom: 1px solid var(--vscode-editor-foreground);
-		margin-top: 27px;
-		margin-left: 12px;
-		flex-direction: column;
-		min-height: 76%;
-
-
-		.h1{
-			font-size: 15px;
-			margin-top: 0px;
-			color: var(--vscode-editor-foreground);
-			padding-left: 30px;
-		}
-	  }
-
-	  .third_line{
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		.nextQuiz{
-			margin-top: 10px;
-			width: 30%;
-			min-height: 60px; /* Altezza minima desiderata per i bottoni */
-			max-height: 80px; /* Altezza massima desiderata per i bottoni */
-			background-color: var(--vscode-input-background);
-			color: var(--vscode-input-foreground);
-			border: 1px solid var(--vscode-input-border);
-			padding: 2px 5px;
-			margin-bottom: 5px;
-			border-radius: 4px;
-		
-		}
-	  }
-	  
-		</style>
-	</head>
-		<body>
-			<div class="total_screen">
-				<div class= "first_line">
-					<img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 120px; height: 61px;">
-					<h1 class="path">Learning Path</h1>
-				</div>
-				<div class="second_line" id="second_line">
-					<h1 class="theory">Theory</h1>
-					<h1 class="description" id="description">${descriptionRem}</h1>
-				</div>
-				<div class="third_line">
-					<button class="nextQuiz">Start</button>
-				</div>
+	</style>
+</head>
+	<body>
+		<div class="total_screen">
+			<div class= "first_line">
+				<img src="https://i.postimg.cc/yNNSbWdG/logo-polyglot-1.png" style="width: 120px; height: 61px;">
+				<h1 class="path">Learning Path</h1>
 			</div>
+			<div class="second_line" id="second_line">
+				<h1 class="theory">Theory</h1>
+				<h1 class="description" id="description">${descriptionRem}</h1>
+			</div>
+			<div class="third_line">
+				<button class="nextQuiz">Start</button>
+			</div>
+		</div>
 
 <script type="module">
 
-	(function(){
+(function(){
 
-		const vscode = acquireVsCodeApi();
+	const vscode = acquireVsCodeApi();
 
-		const apiUrl = 'https://polyglot-api.polyglot-edu.com/api/flows';
+	const apiUrl = 'https://polyglot-api.polyglot-edu.com/api/flows';
 
-		// Aggiungi un ID all'elemento "description" per facilitare la selezione
-		const descriptionElement = document.querySelector('.second_line .description');
+	// Aggiungi un ID all'elemento "description" per facilitare la selezione
+	const descriptionElement = document.querySelector('.second_line .description');
 
-		//let ciaone = "Introduction Applied Machine Learning"
+	//let ciaone = "Introduction Applied Machine Learning"
 
-		const learningPath = '${learningPath}'; // Usa il valore passato come parametro
-		console.log(learningPath);
+	const learningPath = '${learningPath}'; // Usa il valore passato come parametro
+	console.log(learningPath);
 
-		const learningId = '${IdPath}';
-		console.log(learningId);
+	const learningId = '${IdPath}';
+	console.log(learningId);
 
-		fetch(apiUrl)
-			.then(response => response.json())
-			.then(data => {
-				// Find the first item that matches the condition
-				const matchingItem = data.find(item => item.title === learningPath );
+	fetch(apiUrl)
+		.then(response => response.json())
+		.then(data => {
+			// Find the first item that matches the condition
+			const matchingItem = data.find(item => item.title === learningPath );
 
-				if (matchingItem) {
-					// If a matching item is found, set the description
-					descriptionElement.textContent = matchingItem.description;
-					console.log(matchingItem.description);
-				} else {
-					// Handle the case where no matching item is found
-					console.error('No matching item found for', learningPath);
+			if (matchingItem) {
+				// If a matching item is found, set the description
+				descriptionElement.textContent = matchingItem.description;
+				console.log(matchingItem.description);
+			} else {
+				// Handle the case where no matching item is found
+				console.error('No matching item found for', learningPath);
+			}
+		})
+		.catch(error => console.error('Error during API request:', error));
+
+	const apiUrlFirst = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/first'
+	let typevs = '';
+	let ctxForActual= '';
+
+	const postDataFirst = {
+		flowId : learningId
+	};
+
+	const requestOptionsFirst = {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(postDataFirst)
+	};
+
+	fetch(apiUrlFirst,requestOptionsFirst)
+		.then(response => {
+			if(!response.ok){
+				throw new Error('Error in the request');
+			}
+			return response.json();
+		})
+		.then(data => {
+
+			//console.log("dataFirst  ",data);
+
+			typevs = data.platform;
+			ctxForActual = data.ctx;
+			//console.log("typevs822  ",typevs);
+			//console.log("ctxForActual823  ",ctxForActual);
+		})
+		.catch(error => {
+			console.error('Errore nella chiamata API:', error.message);
+		});
+
+	const apiUrlRun = 'https://polyglot-api-staging.polyglot-edu.com/api/flows/${IdPath}/run'
+	let linkForDownload = '';
+
+	console.log("typevs ",typevs);
+
+	if(typevs === 'VSCode'){
+
+		fetch(apiUrlRun,requestOptionsFirst)
+			.then(response => {
+				if(!response.ok){
+					throw new Error('Error in the request');
 				}
+				return response.json();
 			})
-			.catch(error => console.error('Error during API request:', error));
+			.then(data => {
 
+				//da implementare per salvare il link per scaricare il notebook
+			})
+			.catch(error => {
+				console.error('Errore nella chiamata API:', error.message);
+			});
 
-			const nextQuizButton = document.querySelector('.nextQuiz');
-			nextQuizButton.addEventListener('click', function(){
+	}else{
 
-				console.log('button clicked');
-				console.log(learningId);
+		//console.log("in webapp");
 
-				const apiUrl = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/next';
+		const nextQuizButton = document.querySelector('.nextQuiz');
+		nextQuizButton.addEventListener('click', function(){
+
+			//console.log('button clicked');
+			//console.log(ctxForActual);
+
+			const apiUrl2 = 'https://polyglot-api-staging.polyglot-edu.com/api/execution/actual';
 				
-				//data to send in the POST request
-				const postData = {
-					flowId: learningId
-				};
+			//data to send in the POST request
+			
+			const postData = {
+				ctxId: ctxForActual
+			};
 
-				const requestOptions = {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(postData)
-				};
+			const requestOptions = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(postData)
+			};
 
-				//do the call to the API
-				fetch(apiUrl, requestOptions)
-					.then(response => {
-						if(!response.ok){
-							throw new Error('Error in the request');
-						}
-						return response.json();
-					})
-					.then(data => {
-						console.log('data received:', data);
+			//do the call to the API
+			fetch(apiUrl2, requestOptions)
+				.then(response => {
+					if(!response.ok){
+						throw new Error('Error in the request');
+					}
+					return response.json();
+				})
+				.then(data => {
+					//console.log('data received:', data);
 
-						if(data.firstNode){
-
-							const typevs = data.firstNode.platform;
-							const typeQuiz = data.firstNode.type;
-							console.log(typeQuiz);
-							console.log(typevs);
-							vscode.postMessage({
-								command: 'openTypeQuiz',
-								TypeVs: typevs,
-								Type: typeQuiz
-							});
-						}else{
-							const typevs = data.platform;
-							const typeQuiz = data.type;
-							console.log(typeQuiz);
-							vscode.postMessage({
-								command: 'openTypeQuiz',
-								TypeVs: typevs,
-								Type: typeQuiz
-							});
-						}
-
-					})
-					.catch(error => {
-						console.error('Errore nella chiamata API:', error.message);
+					const typeQuiz = data.type;
+					//console.log(typeQuiz);
+					//console.log(typevs);
+					vscode.postMessage({
+						command: 'openTypeQuiz',
+						TypeVs: typevs,
+						Type: typeQuiz,
+						Link: linkForDownload,
+						Ctx: ctxForActual
 					});
-			})
-	}());
+				})
+				.catch(error => {
+					console.error('Errore nella chiamata API:', error.message);
+				});
+		})
+
+	}
+}());
 </script>
-		</body>
-	</html>`;
+	</body>
+</html>`;
 }
